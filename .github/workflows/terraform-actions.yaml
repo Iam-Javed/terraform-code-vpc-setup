@@ -1,0 +1,52 @@
+name: CI workflow for Terraform code to build AWS infrastructure
+
+on:
+  push:
+    branches:
+      - bugfix01
+  
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: terraform format
+        run: terraform fmt -check
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform init
+        run: terraform init
+        
+      - name: terraform plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/bugfix01'
+        run: terraform apply -auto-approve -input=false
+
+
+      - name: idle for 10 minutes
+        run: sleep 1000
+
+
+      - name: terraform destroy
+        run: terraform destroy -auto-approve
