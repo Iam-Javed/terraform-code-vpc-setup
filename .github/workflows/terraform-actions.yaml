@@ -29,13 +29,13 @@ jobs:
           aws-region: us-east-1
 
       - name: Terraform format
-        run: terraform fmt
-
-      - name: Terraform validate
-        run: terraform validate
+        run: terraform fmt -check -recursive
 
       - name: Terraform init
         run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
 
       - name: Terraform plan
         run: terraform plan
@@ -43,7 +43,7 @@ jobs:
       - name: Terraform apply
         if: github.ref == 'refs/heads/bugfix01'
         run: terraform apply -auto-approve -input=false
-
+        
       - name: Idle for 10 minutes
         run: sleep 600
 
