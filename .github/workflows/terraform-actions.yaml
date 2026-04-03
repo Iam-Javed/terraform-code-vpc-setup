@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - bugfix01
-  
   workflow_dispatch:
   schedule:
     - cron: '0 9 * * *'
@@ -13,9 +12,10 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
-      - name: code checkout
+      - name: Checkout code
         uses: actions/checkout@v3
-      - name: setup terraform
+
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.5.0
@@ -27,46 +27,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: terraform format
+      - name: Terraform format
         run: terraform fmt -check
 
-      - name: terraform validate
+      - name: Terraform validate
         run: terraform validate
 
-      - name: terraform init
+      - name: Terraform init
         run: terraform init
 
-      - name: terraform plan
+      - name: Terraform plan
         run: terraform plan
 
-      - name: Terraform Apply
+      - name: Terraform apply
         if: github.ref == 'refs/heads/bugfix01'
         run: terraform apply -auto-approve -input=false
 
-      - name: idle for 10 minutes
-        run: sleep 1000
+      - name: Idle for 10 minutes
+        run: sleep 600
 
-      - name: terraform destroy
-        run: terraform destroy -auto-approve
-
-      - name: terraform format
-        run: terraform fmt -check
-
-      - name: terraform validate
-        run: terraform validate
-
-      - name: terraform init
-        run: terraform init
-
-      - name: terraform plan
-        run: terraform plan
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/bugfix01'
-        run: terraform apply -auto-approve -input=false
-
-      - name: idle for 10 minutes
-        run: sleep 1000
-
-      - name: terraform destroy
+      - name: Terraform destroy
         run: terraform destroy -auto-approve
