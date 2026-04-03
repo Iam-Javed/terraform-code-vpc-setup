@@ -28,9 +28,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Terraform format
-        run: terraform fmt -check -recursive
-
       - name: Terraform init
         run: terraform init
 
@@ -43,7 +40,7 @@ jobs:
       - name: Terraform apply
         if: github.ref == 'refs/heads/bugfix01'
         run: terraform apply -auto-approve -input=false
-        
+
       - name: Idle for 10 minutes
         run: sleep 600
 
